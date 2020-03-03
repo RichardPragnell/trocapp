@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -63,13 +64,21 @@ class _MyHomePageState extends State<MyHomePage> {
         // in the middle of the parent.
         child: new ListWheelScrollView.useDelegate(
           itemExtent: 300,
-          offAxisFraction: 10,
           childDelegate: ListWheelChildLoopingListDelegate(
             children: List<Widget>.generate(
-              5, (index) => CachedNetworkImage(
-                imageUrl: "https://loremflickr.com/320/240/music?lock=${index + 1}",
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+              5, (index) => Container(
+                decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  width: 1,
+                  color: Colors.grey)
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: "https://loremflickr.com/320/240/music?lock=${index + 1}",
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ),
               ),
             ),
           ),
