@@ -15,3 +15,5 @@ class GetItemForConcreteId extends ItemEvent {
   @override
   List<Object> get props => [idString];
 }
+
+class GetItemForNearLocation extends ItemEvent {}

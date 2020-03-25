@@ -1,6 +1,10 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:trocapp/core/error/failures.dart';
+import 'package:trocapp/core/usecases/usecase.dart';
 import 'package:trocapp/core/util/input_converter.dart';
+import 'package:trocapp/features/explorer/domain/entities/item.dart';
 import 'package:trocapp/features/explorer/domain/usecases/get_concrete_item.dart';
 import 'package:trocapp/features/explorer/domain/usecases/get_near_item.dart';
 import 'package:trocapp/features/explorer/presentation/bloc/bloc.dart';
@@ -32,19 +36,44 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
   ItemState get initialState => Empty();
 
   @override
-  Stream<ItemState> mapEventToState(ItemEvent event) async* {
+  Stream<ItemState> mapEventToState(ItemEvent event,) async* {
     if (event is GetItemForConcreteId) {
       final inputEither =
-          inputConverter.stringToUnsignedInteger(event.idString);
+      inputConverter.stringToUnsignedInteger(event.idString);
 
       yield* inputEither.fold(
-        (failure) async* {
+            (failure) async* {
           yield Error(message: INVALID_INPUT_FAILURE_MESSAGE);
         },
-        // Although the "success case" doesn't interest us with the current test,
-        // we still have to handle it somehow.
-        (integer) => throw UnimplementedError(),
+            (integer) async* {
+          yield Loading();
+          final failureOrItem = await getConcreteItem(Params(id: integer));
+          yield* _eitherLoadedOrErrorState(failureOrItem);
+        },
       );
+    } else if (event is GetItemForNearLocation) {
+      yield Loading();
+      final failureOrItem = await getNearItem(NoParams());
+      yield* _eitherLoadedOrErrorState(failureOrItem);
+    }
+  }
+
+  Stream<ItemState> _eitherLoadedOrErrorState(
+      Either<Failure, Item> failureOrItem,) async* {
+    yield failureOrItem.fold(
+          (failure) => Error(message: _mapFailureToMessage(failure)),
+          (item) => Loaded(item: item),
+    );
+  }
+
+  String _mapFailureToMessage(Failure failure) {
+    switch (failure.runtimeType) {
+      case ServerFailure:
+        return SERVER_FAILURE_MESSAGE;
+      case CacheFailure:
+        return CACHE_FAILURE_MESSAGE;
+      default:
+        return 'Unexpected error';
     }
   }
 }
