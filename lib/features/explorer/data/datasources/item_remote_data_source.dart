@@ -28,7 +28,7 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
 
   @override
   Future<ItemModel> getNearItem() =>
-      _getItemFromUrl('https://reqres.in/api/unknown/15'); // TODO: fix 15
+      _getItemFromUrl('https://reqres.in/api/unknown/1'); // TODO: fix 1
 
   Future<ItemModel> _getItemFromUrl(String url) async {
     final response = await client.get(
@@ -37,9 +37,57 @@ class ItemRemoteDataSourceImpl implements ItemRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      return ItemModel.fromJson(json.decode(response.body));
+      ApiData rawAPI = ApiData.fromJson(json.decode(response.body));
+      return ItemModel.fromJson(rawAPI.data.toJson());
     } else {
       throw ServerException();
     }
+  }
+}
+
+
+class ApiData {
+  Data data;
+
+  ApiData({this.data});
+
+  ApiData.fromJson(Map<String, dynamic> json) {
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.data != null) {
+      data['data'] = this.data.toJson();
+    }
+    return data;
+  }
+}
+
+class Data {
+  int id;
+  String name;
+  int year;
+  String color;
+  String pantoneValue;
+
+  Data({this.id, this.name, this.year, this.color, this.pantoneValue});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    year = json['year'];
+    color = json['color'];
+    pantoneValue = json['pantone_value'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['year'] = this.year;
+    data['color'] = this.color;
+    data['pantone_value'] = this.pantoneValue;
+    return data;
   }
 }

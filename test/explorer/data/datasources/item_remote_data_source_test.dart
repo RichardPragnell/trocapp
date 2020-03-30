@@ -23,7 +23,7 @@ void main() {
 
   void setUpMockHttpClientSuccess200() {
     when(mockHttpClient.get(any, headers: anyNamed('headers')))
-        .thenAnswer((_) async => http.Response(fixture('item.json'), 200));
+        .thenAnswer((_) async => http.Response(fixture('item_raw.json'), 200));
   }
 
   void setUpMockHttpClientFailure404() {
@@ -40,7 +40,7 @@ void main() {
       () {
         //arrange
         when(mockHttpClient.get(any, headers: anyNamed('headers'))).thenAnswer(
-          (_) async => http.Response(fixture('item.json'), 200),
+              (_) async => http.Response(fixture('item_raw.json'), 200),
         );
         // act
         dataSource.getConcreteItem(tId);
@@ -91,7 +91,7 @@ void main() {
         dataSource.getNearItem();
         // assert
         verify(mockHttpClient.get(
-          'https://reqres.in/api/unknown/15',
+          'https://reqres.in/api/unknown/1',
           headers: {'Content-Type': 'application/json'},
         )); // TODO: fix 15
       },
