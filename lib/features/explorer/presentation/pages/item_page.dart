@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trocapp/features/explorer/presentation/bloc/bloc.dart';
+import 'package:trocapp/features/explorer/presentation/widgets/item_tests.dart';
 import 'package:trocapp/features/explorer/presentation/widgets/widgets.dart';
 import 'package:trocapp/injection_container.dart';
 
@@ -12,7 +13,8 @@ class ItemPage extends StatelessWidget {
         title: Text('Item'),
       ),
       body: SingleChildScrollView(
-        child: buildBody(context),
+        child: TestDisplay(),
+        //child: buildBody(context),
       ),
     );
   }

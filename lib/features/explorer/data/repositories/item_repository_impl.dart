@@ -36,7 +36,7 @@ class ItemRepositoryImpl implements ItemRepository {
   }
 
   Future<Either<Failure, Item>> _getItem(
-    _ConcreteOrNearChooser getConcreteOrNear,
+      _ConcreteOrNearChooser getConcreteOrNear
   ) async {
     if (await networkInfo.isConnected) {
       try {
